@@ -27,22 +27,31 @@ Dir.new("#{Dir.pwd}/materials").each do |comic|
     `mkdir target_dir/#{processed}/sections/#{episode}`
     File.open("target_dir/#{processed}/sections/#{episode}/_section.txt", "w")
 
+    img_tags = ""
     Dir.new("#{Dir.pwd}/materials/#{comic}/#{episode}").each do |page|
       next if page[0] == '.'
       FileUtils.cp("materials/#{comic}/#{episode}/#{page}", "target_dir/#{processed}/#{episode}_#{page}")
-      File.open("target_dir/#{processed}/sections/#{episode}/#{page.split('.')[0]}.html", "w") do |f|
+      img_tags += "<img src=\"#{Dir.pwd}/target_dir/#{processed}/#{episode}_#{page}\" class=\"image\" />\n"
+    end
+    File.open("target_dir/#{processed}/sections/#{episode}/001.html", "w") do |f|
         f.write <<-HTML
           <html>
             <head>
-              <title>#{comic}-#{episode}-#{page.split('.')[0]}</title>
+              <title>#{comic}-#{episode}</title>
+              <style type="text/css">
+                .image {
+                  width: 100%;
+                  margin: 0em;
+                  page-break-before: always;
+                }
+              </style>
             </head>
             <body>
-              <img src="#{Dir.pwd}/target_dir/#{processed}/#{episode}_#{page}" />
+              #{img_tags}
             </body>
           </html>
           HTML
       end
-    end
   end
 
   Kindlerb.run("target_dir/#{processed}", true)
