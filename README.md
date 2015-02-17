@@ -24,7 +24,7 @@ materials
 Use following command to compile comics into .mobi files:
 
 ```shell
-bundle exec ruby kinmobi.rb
+bundle exec ruby kincomi.rb
 ```
 
 Generated .mobi files would be placed under ``generated`` directory.
