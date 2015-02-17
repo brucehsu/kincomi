@@ -55,4 +55,7 @@ Dir.new("#{Dir.pwd}/materials").each do |comic|
   end
 
   Kindlerb.run("target_dir/#{processed}", true)
+  `mkdir -p generated`
+  `mv target_dir/#{processed}/#{comic}.mobi generated/`
+  `rm -r target_dir/#{processed}`
 end
