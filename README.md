@@ -1,6 +1,9 @@
 # kincomi
 Kindle Paperwhite .mobi generator for Comic/Manga
 ## Install
+Download ``calibre`` from http://calibre-ebook.com then modify ``EBOOK_CONVERT_BIN`` ``kincomi.rb``. Default path is for OSX users.
+
+Once set, execute following command:
 ```shell
 bundle install
 ```
