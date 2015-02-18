@@ -116,7 +116,7 @@ def create_zip(directory, out_path)
   end
 end
 
-CALIBRE_EBOOK_CONVERT_PATH = ""
+EBOOK_CONVERT_BIN = "/Applications/calibre.app/Contents/MacOS/ebook-convert"
 
 FileUtils.mkdir_p 'zip_cache'
 ARGV.each do |comic_id|
@@ -125,6 +125,7 @@ ARGV.each do |comic_id|
   comic.chapters.times do |chapter|
     chapter_dir = "#{chapter+1}".rjust(4,'0')
     create_zip("#{comic.download_path}#{chapter_dir}", "zip_cache/#{chapter_dir}.cbz")
+    `#{EBOOK_CONVERT_BIN} zip_cache/#{chapter_dir}.cbz "generated/#{comic.full_name}-#{chapter_dir}.mobi"`
   end
   FileUtils.rm_rf 'zip_cache'
 end
