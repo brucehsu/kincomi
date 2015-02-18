@@ -3,10 +3,11 @@ require 'date'
 require 'fileutils'
 require 'open-uri'
 require 'nokogiri'
+require 'zip'
 
 class Comic
   F = 50
-  attr_reader :name, :author
+  attr_reader :name, :author, :download_path
 
   def initialize(comic_id)
     @id = comic_id
@@ -105,9 +106,25 @@ class Comic
   end
 end
 
+def create_zip(directory, out_path)
+  Zip::File.open("#{out_path}", Zip::File::CREATE) do |zip_file|
+    Dir.new(directory).each do |f|
+      unless f[0] == '.'
+        zip_file.add f, "#{directory}/#{f}"
+      end
+    end
+  end
+end
+
 CALIBRE_EBOOK_CONVERT_PATH = ""
 
+FileUtils.mkdir_p 'zip_cache'
 ARGV.each do |comic_id|
   comic = Comic.new(comic_id)
   comic.download_all
+  comic.chapters.times do |chapter|
+    chapter_dir = "#{chapter+1}".rjust(4,'0')
+    create_zip("#{comic.download_path}#{chapter_dir}", "zip_cache/#{chapter_dir}.cbz")
+  end
+  FileUtils.rm_rf 'zip_cache'
 end
