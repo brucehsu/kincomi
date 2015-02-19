@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 gem 'nokogiri'
 gem 'rubyzip'
+gem 'celluloid-io'
+gem 'http'

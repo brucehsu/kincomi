@@ -4,8 +4,11 @@ require 'fileutils'
 require 'open-uri'
 require 'nokogiri'
 require 'zip'
+require 'celluloid/io'
+require 'http'
 
 class Comic
+  include Celluloid::IO
   F = 50
   attr_reader :name, :author, :download_path
 
@@ -34,15 +37,18 @@ class Comic
       puts "Downloading: [#{@author}]#{@name} Chapter #{chapter}"
       chapter = chapter.rjust(4, '0')
       FileUtils.mkdir_p "#{@download_path}#{chapter}"
-      total_pages.to_i.times do |i|
-        open(img_url(subkey, i+1)) do |pic|
-          File.open("#{@download_path}#{chapter}/#{(i+1).to_s.rjust(3,'0')}.jpg", 'wb') do |f|
-            f.write pic.read
-            puts "\tPage #{i+1} downloaded"
-          end
+      futures = (0...total_pages.to_i).map { |i| [i+1, self.future.download_page(subkey, chapter, i+1)]}
+      futures.each do |page, future|
+        response = future.value
+        File.open("#{@download_path}#{chapter}/#{page.to_s.rjust(3,'0')}.jpg", 'wb') do |f|
+          f.write response.to_s
         end
       end
     end
+  end
+
+  def download_page(subkey, chapter, page)
+    HTTP.get(img_url(subkey, page), socket_class: Celluloid::IO::TCPSocket)
   end
 
   def chapters
