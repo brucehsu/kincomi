@@ -130,6 +130,7 @@ ARGV.each do |comic_id|
   comic.download_all
   comic.chapters.times do |chapter|
     chapter_dir = "#{chapter+1}".rjust(4,'0')
+    puts "Creating ZIP file for chapter #{chapter+1}"
     create_zip("#{comic.download_path}#{chapter_dir}", "zip_cache/#{chapter_dir}.cbz")
     opt = "--authors \"#{comic.author}\" \
           --series \"#{comic.full_name}\" \
@@ -137,6 +138,7 @@ ARGV.each do |comic_id|
           --output-profile kindle_pw \
           --right2left \
           --title \"#{comic.name} \##{chapter+1}\""
+    puts "Creating .mobi for chapter #{chapter+1}"
     `#{EBOOK_CONVERT_BIN} zip_cache/#{chapter_dir}.cbz "generated/#{comic.full_name}-#{chapter_dir}.mobi" #{opt}`
   end
   FileUtils.rm_rf 'zip_cache'
