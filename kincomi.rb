@@ -48,7 +48,7 @@ class Comic
         begin
           response = future.value(10)
         rescue
-          futures << [page, self.future.download_page(subkey, chapter, page)]
+          futures << [page, future]
           next
         end
         File.open("#{@download_path}#{chapter}/#{page.to_s.rjust(3,'0')}.jpg", 'wb') do |f|
