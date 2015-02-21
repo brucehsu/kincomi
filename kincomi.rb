@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'yaml'
 require 'date'
 require 'fileutils'
@@ -16,7 +17,7 @@ class Comic
     @id = comic_id
     doc = Nokogiri::HTML(open("http://www.comicvip.com/html/#{@id}.html"))
     @name = doc.css('font[color="#FF6600"]')[0].text
-    @author = doc.css('tr').text().scan(/作者：\r\n(.+)\r\n/).flatten[0]
+    @author = doc.css('tr').text().scan(/作者.+\s+(.+)/).flatten[0].strip
     @category = doc.css('a.Ch')[0]['onclick'].scan(/,(\d+)\);/).flatten[0].to_i
     @base_url = show_url
     @chapters = []
