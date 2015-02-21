@@ -34,8 +34,12 @@ class Comic
       chapter = "#{c+1}"
       subkey = create_subkey(comic_key, chapter)
       total_pages = page_count(subkey)
-      puts "Downloading: [#{@author}]#{@name} Chapter #{chapter}"
       chapter = chapter.rjust(4, '0')
+      if File.exists? "#{@download_path}#{chapter}"
+        puts "Skipping:    [#{@author}]#{@name} Chapter #{chapter.to_i}"
+        next
+      end
+      puts "Downloading: [#{@author}]#{@name} Chapter #{chapter.to_i}"
       FileUtils.mkdir_p "#{@download_path}#{chapter}"
       futures = (0...total_pages.to_i).map { |i| [i+1, self.future.download_page(subkey, chapter, i+1)]}
       futures.each do |page, future|
