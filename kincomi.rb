@@ -43,14 +43,13 @@ class Comic
       puts "Downloading: [#{@author}]#{@name} Chapter #{chapter.to_i}"
       FileUtils.mkdir_p "#{@download_path}#{chapter}"
       futures = (0...total_pages.to_i).map { |i| [i+1, self.future.download_page(subkey, chapter, i+1)]}
-      futures.each do |page, future|
+      while futures.size != 0
+        page, future = futures.shift
         begin
           response = future.value(10)
         rescue
-          response = download_page(subkey, chapter, page)
-          while response.status != 200
-            response = download_page(subkey, chapter, page)
-          end
+          futures << [page, self.future.download_page(subkey, chapter, page)]
+          next
         end
         File.open("#{@download_path}#{chapter}/#{page.to_s.rjust(3,'0')}.jpg", 'wb') do |f|
           f.write response.to_s
